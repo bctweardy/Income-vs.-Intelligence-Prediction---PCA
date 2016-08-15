@@ -1,0 +1,1 @@
+# Income-vs.-Intelligence-Prediction---PCA
