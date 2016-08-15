@@ -1,0 +1,44 @@
+Title "Cluster Analysis - Career Success - Hiearchial Method";
+proc import out = demo2
+datafile = 'C:\Users\Brad_2\Desktop\Data for Cluster Analysis SelfEsteem.csv'
+		dbms = csv replace;
+	getnames=yes;
+	datarow = 2;
+run;
+data demo2;
+set demo2(keep= Esteem1 Esteem2 Esteem3 Esteem4 Esteem5 Esteem6 Esteem7 Esteem8 Esteem9 Esteem10);
+cid = _n_;
+run;
+proc sort;
+by cid;
+run; 
+proc print data=demo2;
+run;
+ods graphics on;
+proc cluster method=ward outtree=cluster1;
+var Esteem1 Esteem2 Esteem3 Esteem4 Esteem5 Esteem6 Esteem7 Esteem8 Esteem9 Esteem10;
+id cid;
+run;
+ods graphics off;
+/*goptions vsize=9in hsize=6.4in htext=.9pct htitle=3pct;*/
+axis1 order=(0 to 1 by 0.2);
+title'"Effect of the Level of Education on Happiness"';
+title'Cluster Analysis Tree Diagram';
+proc tree horizontal level=0.7 out=cluster2;
+height _rsq_;
+id cid;
+run;
+proc sort;
+by cid;
+run;
+proc print;
+run;
+data combine;
+merge demo2 cluster2;
+by cid;
+run;
+proc glm;
+class cluster;
+model Esteem1 Esteem2 Esteem3 Esteem4 Esteem5 Esteem6 Esteem7 Esteem8 Esteem9 Esteem10 = cluster;
+means cluster;
+run;
